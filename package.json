@@ -1,0 +1,21 @@
+{
+  "name": "validadores",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dialogs": "^2.0.1",
+    "electron": "^25.5.0",
+    "electron-prompt": "^1.7.0",
+    "electron-reload": "^2.0.0-alpha.1",
+    "git": "^0.1.5",
+    "mongoose": "^7.3.4",
+    "smalltalk": "^4.1.1"
+  }
+}
