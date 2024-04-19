@@ -55,7 +55,7 @@ window.addEventListener('load', async ()=> {        //al INICIAR leemos la base 
     //equipos.setAttribute("placeholder", "Equipo")
     equipos.value = "Validador"
     //equipos.style.backgroundColor = "#ccf"
-    equipos.style.border = "2px solid blue"
+    //equipos.style.border = "3px solid cian"
     equipos.style.fontWeight = "bold"
 
 })
@@ -71,6 +71,9 @@ equipos.addEventListener('change', async (e)=> {           //si ELEGIMOS el equi
     if (equipo === "Teclado") {
        selectTeclado()
     }
+    if (equipo === "MountinKit") {
+        selectMK()
+     }
 })
 
 async function selectValidador() {
@@ -91,9 +94,9 @@ async function selectValidador() {
    // sonda.classList.add("bg-primary")
     validadores.classList.add("active")
     teclados.classList.remove("active")
-
-    equipos.style.border = "2px solid blue"
-
+    equipos.style.border = "3px solid #0d6efd"    //suave: #cfe2ff
+    historialSerie.className= "mt-1 alert alert-primary p-1 fw-bold"
+    //historialSerie.innerText= "SERIE: "
 
     //serieInput.classList.add("placeholderVal")
     serieInput.setAttribute("placeholder", "Serie Val")
@@ -122,13 +125,27 @@ async function selectTeclado() {
     validadores.classList.remove("active")
     teclados.classList.add("active")
 
-    equipos.style.border = "2px solid green"
-
+    equipos.style.border = "3px solid #198754"   //otro para teclado o texto teclado #20c997  suave: #d1e7dd
+    historialSerie.className= "mt-1 alert alert-success p-1 fw-bold"
+    historialSerie.innerText= "Serie: "
 
     serieInput.setAttribute("placeholder", "Serie Tec")
     reset()     // resetemos form e historial
     serieInput.focus()
 }
+
+// Monting kit color: #ffc107
+async function selectMK() {
+    equipos.style.border = "3px solid #ffc107" 
+    historialSerie.className= "mt-1 alert alert-warning p-1 fw-bold"
+    historialSerie.innerText= "Serie: "
+
+    serieInput.setAttribute("placeholder", "Serie MK")
+    reset()     // resetemos form e historial
+    serieInput.focus()
+}
+
+//OTROS color #fd7e14
 
 validadores.addEventListener('click', async () => {    //al elegir VALIDADORES -  FUNCIONA IGUAL Sin el GetElementbyId !!!!
  selectValidador();
@@ -137,6 +154,10 @@ validadores.addEventListener('click', async () => {    //al elegir VALIDADORES -
 teclados.addEventListener('click', async () => {         //al elegir TECLADOS
   selectTeclado();
 });
+
+//mk.addEventListener('click', async () => {   //al elegir MOUNTING KIT ******* CUIDADO SI LA AGREGO SE ROMPE TODOOOOOO  **********
+//    selectMK();
+//  });
 
 
 buscar.addEventListener('click', async (e) => {        // al presionar BUSCAR...en Navegacion
@@ -317,12 +338,12 @@ botonConsultar.addEventListener("click", async (e)=>{       //al CONSULTAR
             return num == serie    // chequeamos que sea el buscado. no usar estricto ===.
         })  
         if (buscados.length != 0) {
-          historialSerie.className="alert alert-info p-1 fw-bold"
           historialSerie.innerText =`Serie: ${serie}` 
+          historialSerie.classList.remove("alert-danger")
           console.log(buscados)
           muestraHistorial(buscados)            // llenamos el HISTORIAL
         } else if (buscados.length === 0) { 
-            historialSerie.className="alert alert-danger p-1 fw-bold"
+            historialSerie.classList.add("alert-danger")
             historialSerie.innerText="No encontrado"
             console.log("No encontrado!")
             while (tbody.firstChild) {       //borramos las filas de la tabla
@@ -341,8 +362,7 @@ function reset() {                     //RESET formulario e historial
     let ahora = DateTime.now()
     let fecha = ahora.toISODate()   // cargamos fecha de hoy
     fechaInput.value = fecha
-    historialSerie.className=""
-    historialSerie.innerText =`Serie:`
+    
     equipos.focus()
 }
 
@@ -462,32 +482,63 @@ function muestraHistorial(listaHistorial) {
                    
 }
 
-async function buscarProblema(buscada) { 
-    let problemas = listaSeries.filter((obj)=> {       
-       if (obj.problema) {                     //chequeamos que exista esa propiedad primero (no todos la tienen)
-         return obj.problema.toLowerCase().includes(buscada)  //pasamos a minúsculas y comparamos
-       }
-    })
-    let casos = listaSeries.filter((obj)=> {       
-        if (obj.caso) {                            
-          return obj.caso.includes(buscada) 
-        }
-     })
+//async function buscarProblema(buscada) { 
+//    let problemas = listaSeries.filter((obj)=> {       
+//       if (obj.problema) {                     //chequeamos que exista esa propiedad primero (no todos la tienen)
+//         return obj.problema.toLowerCase().includes(buscada)  //pasamos a minúsculas y comparamos
+//       }
+//    })
+//    let casos = listaSeries.filter((obj)=> {       
+//        if (obj.caso) {                            
+//          return obj.caso.includes(buscada) 
+//        }
+//     })
    // let fechas = listaSeries.filter((obj)=>{   //fechas las voy a manejar de otro modo. por un boton o algo así
    //     if (obj.fecha) {
    //       return obj.fecha.includes(buscada)
    //     }
    // })
-    let encontrados = problemas.concat(casos)  //.concat(fechas))    // unimos los arrays
+//    let encontrados = problemas.concat(casos)  //.concat(fechas))    // unimos los arrays
+
+//    if (encontrados.length > 0) {
+       // console.log("Se encontró en:");
+ //       return encontrados
+ //   } else {
+       // console.log("no se encontró");
+//        return []
+//    }
+//}
+
+
+async function buscarProblema(buscada) {
+    let encontrados = [];
+
+    for (let obj of listaSeries) {
+        if (obj.problema && obj.problema.toLowerCase().includes(buscada)) {
+            encontrados.push(obj);
+        } else if (obj.caso && obj.caso.includes(buscada)) {
+            encontrados.push(obj);
+        }
+    }
+
+    // Ordenar por la propiedad 'fecha' de menor a mayor
+    encontrados.sort((a, b) => {
+        if (a.fecha && b.fecha) {
+            return new Date(a.fecha) - new Date(b.fecha);
+        } else if (a.fecha) {
+            return -1; // Coloca 'a' antes de 'b' si 'a' tiene fecha definida y 'b' no
+        } else if (b.fecha) {
+            return 1; // Coloca 'b' antes de 'a' si 'b' tiene fecha definida y 'a' no
+        } else {
+            return 0; // No cambia el orden si ambas fechas son undefined
+        }
+    });
 
     if (encontrados.length > 0) {
-       // console.log("Se encontró en:");
-        return encontrados
+        return encontrados;
     } else {
-       // console.log("no se encontró");
-        return []
+        return [];   //se podría retornar null para despues colocar el mensaje "nada encontrado"
     }
-    
 }
 
 //guardamos el check de entregado, true o false en la dB
@@ -513,22 +564,27 @@ window.electronAPI.entregadoGuardar( async (event, id, estado) => {
    
 
 let existe 
-notas.addEventListener('click', ()=> {
+const nota = document.getElementById('nota')
+const notasBtn = document.getElementById('notasBtn')
+
+notasBtn.addEventListener('click', ()=> {
     if (!existe) {
-        const nota = document.createElement('input')
-        nota.type = 'textarea'
+        nota.style.display = 'block'
+        //nota.type = 'textarea'
         nota.style.height= "200px"
         nota.style.width = "400px"
-        nota.value = "Notas / Recordatorios: \n coches con conversor: 5-32-62-89-97-98-101" 
+        nota.innerText = "Notas / Recordatorios: \n coches con conversor: 5-32-62-89-97-98-101" 
         // nota.style.backgroundColor = "transparent"
-        // nota.style.borderColor = "orange"
         nota.style.textAlign = "center"
         nota.style.borderRadius = "10px"
         nota.style.borderColor = "orange"
         nota.style.boxShadow = "10px"
         nota.classList.add("card", "m-4")
-        menu.appendChild(nota)
+        //menus.appendChild(nota)
         existe = true
     }
-    //borrar nota.   como hago?
+    else { 
+        nota.style.display = 'none'
+        existe = false
+    }
 })

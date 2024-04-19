@@ -6,6 +6,7 @@ const {BrowserWindow, dialog, ipcMain} = require('electron')
 const {app, Menu} = require('electron') 
 const path = require('path')
 const prompt = require('electron-prompt')
+//const {showConsole, hideConsole} = require ("node-hide-console-window")
 
 let buscados = []
 
@@ -15,6 +16,8 @@ function createWindow() {
      mainWindow = new BrowserWindow({     // creamos el objeto win de clase browserwindow
      width: 1050,
      height: 700,
+     resizable: false,
+     autoHideMenuBar: true,        //oculta el Menú
       webPreferences: {           
          nodeIntegration: true,  //por defecto Electron lo tiene DESACTIVADO.
          sandbox: false, 
@@ -24,7 +27,7 @@ function createWindow() {
    }) 
    mainWindow.loadFile('index.html')     // cargamos en win el html a mostrar
    // si en vez de loadfile usamos loadUrl podemos cargar una página web desde electron! parecido a lo que hace Nativefier. muy loco.
-   
+
    // Cargamos el MENÚ:
    const setMainMenu = ()=> {
     const template = [
@@ -48,9 +51,14 @@ function createWindow() {
      ]
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
+
    } 
    setMainMenu(mainWindow) 
    //mainWindow.webContents.openDevTools()  // abro inspector por default. luego sacarla
+  // mainWindow.setAutoHideMenuBar(true)     // funciona, pero al iniciar no oculta el menú. lo puse el crear new browserWindow.
+  // if (mainWindow.isMenuBarVisible()) { 
+  //    setMenuBarVisibility(false)
+  // }
 
 }
 
@@ -68,6 +76,7 @@ app.whenReady().then( () => {
    //mainWindow.loadFile(archivo);
 //});
 //mainWindow.webContents  esto no funciona
+
 
 const additionalData = { myKey: 'myValue' }
 const gotTheLock = app.requestSingleInstanceLock(additionalData) //CONTROLAMOS que no haya otra instancia abierta

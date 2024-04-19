@@ -16,6 +16,7 @@
     "electron-reload": "^2.0.0-alpha.1",
     "git": "^0.1.5",
     "mongoose": "^7.3.4",
+    "node-hide-console-window": "^2.2.0",
     "smalltalk": "^4.1.1"
   }
 }
